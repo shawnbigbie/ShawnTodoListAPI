@@ -12,8 +12,6 @@ const server = http.createServer(app);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(express.static('src'));
-
 // Middleware
 const Todo = require('./models/todo');
 const Category = require('./models/category');
@@ -25,6 +23,10 @@ mongoose.connect(process.env.DB_CONNECTION,  { useNewUrlParser: true, useUnified
 
 // Server
 server.listen(PORT, (req, res) => console.log(`Server running on: ${PORT}`));
+
+app.get('/', (req, res) => {
+  res.send('Welcome Shawns Todo API.');
+})
 
 // Route to create a Category
 app.post("/create-category", (req, res) => {
