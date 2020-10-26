@@ -12,6 +12,8 @@ const server = http.createServer(app);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.use(express.static('src'));
+
 // Middleware
 const Todo = require('./models/todo');
 const Category = require('./models/category');
@@ -21,15 +23,11 @@ mongoose.connect(process.env.DB_CONNECTION,  { useNewUrlParser: true, useUnified
     console.log('Connected to DataBase')
 );
 
-app.get('/', (req, res) => {
-  res.send('Welcome Shawns Todo App.');
-})
-
 // Server
 server.listen(PORT, (req, res) => console.log(`Server running on: ${PORT}`));
 
 // Route to create a Category
-app.post("/categories", (req, res) => {
+app.post("/create-category", (req, res) => {
     Category.create({
       name: req.body.name,
     })
@@ -64,7 +62,7 @@ app.post("/categories", (req, res) => {
   });
   
   // Route for creating a new Todo and updating Category "Todo" field with it
-  app.post("/categories/:id", (req, res) => {
+  app.post("/categories/:id/create-todo", (req, res) => {
     Todo.create({
       name: req.body.name,
       complete: req.body.complete
@@ -84,8 +82,8 @@ app.post("/categories", (req, res) => {
       });
   });
   
-  // Route for retrieving a Category by id and populating it's Todos.
-  app.get("/categories/:id", (req, res) => {
+  // Route for retrieving a Category by id and it's Todos.
+  app.get("/category/:id", (req, res) => {
     Category.findById({ _id: req.params.id })
       .populate("todo")
       .then((category) => {
@@ -97,7 +95,7 @@ app.post("/categories", (req, res) => {
   });
   
   // Route to get all Todos
-  app.get("/alltodos", (req, res) => {
+  app.get("/todos", (req, res) => {
     Todo.find({})
       .then((todos) => {
         res.json(todos);
@@ -108,7 +106,7 @@ app.post("/categories", (req, res) => {
   });
   
   // Route to delete a todo
-  app.delete("/todos", (req, res) => {
+  app.delete("/todo", (req, res) => {
     Todo.deleteOne({ name: req.body.name }, (err, todos) => {
       Todo.find((err, todos) => {
         if (err) console.log(err);
@@ -119,7 +117,7 @@ app.post("/categories", (req, res) => {
   });
   
   // Get todo by id
-  app.get("/todos/:id", (req, res) => {
+  app.get("/todo/:id", (req, res) => {
     Todo.findById(req.params.id)
       .then((todos) => {
         res.json(todos);
@@ -130,7 +128,7 @@ app.post("/categories", (req, res) => {
   });
   
   // Update todo by id
-  app.put("/todos/:id", (req, res) => {
+  app.put("/todo/:id", (req, res) => {
     Todo.findById({ _id: req.params.id }, (err, todo) => {
       if (err) console.log(err);
   
@@ -146,7 +144,7 @@ app.post("/categories", (req, res) => {
   });
   
   // Update Category by id
-  app.put('/categories/:id', (req, res) =>{
+  app.put('/category/:id', (req, res) =>{
       Category.findById({ _id: req.params.id}, (err, todo) => {
           if (err) console.log(err)
   
